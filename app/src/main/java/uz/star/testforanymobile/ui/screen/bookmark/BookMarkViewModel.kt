@@ -28,6 +28,7 @@ class BookMarkViewModel @ViewModelInject constructor(
     fun getSavePlaces() {
         _places.addSourceDisposable(repository.getAllPlaces()) { resultData ->
             resultData.onData { list ->
+                if (list.isEmpty()) _message.value = "Список сейчас пуст"
                 _places.value = list
             }.onMessage { message ->
                 _message.value = message
@@ -38,8 +39,8 @@ class BookMarkViewModel @ViewModelInject constructor(
     fun deletePlaceMark(placeModel: PlaceModel) {
         _places.addSourceDisposable(repository.deletePlace(placeModel)) { resultData ->
             resultData.onData { status ->
-                getSavePlaces()
                 _delete.value = status
+                getSavePlaces()
             }.onMessage { message ->
                 _message.value = message
             }

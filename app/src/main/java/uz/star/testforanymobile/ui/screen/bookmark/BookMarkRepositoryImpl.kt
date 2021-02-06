@@ -25,9 +25,9 @@ class BookMarkRepositoryImpl @Inject constructor(
                 if (list != null)
                     if (list.isNotEmpty())
                         resultLiveData.value = ResultData.data(list)
-                    else
-                        resultLiveData.value =
-                            ResultData.message("Вы еще не сохранили ни одного места")
+                    else {
+                        resultLiveData.value = ResultData.data(listOf())
+                    }
                 else
                     resultLiveData.value = ResultData.message("непредвиденная ошибка")
             }

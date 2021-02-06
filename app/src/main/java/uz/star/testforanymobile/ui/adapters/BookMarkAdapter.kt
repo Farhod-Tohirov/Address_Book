@@ -23,7 +23,7 @@ class BookMarkAdapter :
     companion object {
         var DIFF_SEARCH_CALLBACK = object : DiffUtil.ItemCallback<PlaceModel>() {
             override fun areItemsTheSame(oldItem: PlaceModel, newItem: PlaceModel) =
-                newItem.id == oldItem.id
+                newItem.hashCode() == oldItem.hashCode()
 
             override fun areContentsTheSame(oldItem: PlaceModel, newItem: PlaceModel) =
                 newItem.title == oldItem.title && newItem.subtitle == oldItem.subtitle && newItem.distance == oldItem.distance

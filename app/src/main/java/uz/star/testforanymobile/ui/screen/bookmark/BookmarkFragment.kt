@@ -64,7 +64,7 @@ class BookmarkFragment : Fragment() {
     }
 
     private val placesObserver = Observer<List<PlaceModel>> {
-        adapter.submitList(it)
+        adapter.submitList(it.toMutableList())
     }
 
     private val messageObserver = Observer<String> {
