@@ -86,7 +86,7 @@ class MapFragment : Fragment() {
 
     private fun loadViews(isItFromSaved: Boolean = false) {
         /**
-         * If this fragment called from bookmarkFragment it is not needable to loadBelow
+         * If this fragment called from bookmarkFragment it is not necessary to loadBelow
          * So, below used if statement.
          */
         if (!isItFromSaved) {
@@ -227,10 +227,6 @@ class MapFragment : Fragment() {
             Animation(Animation.Type.SMOOTH, 1f),
             null
         )
-    }
-
-    private fun drawToPoint(point: Point) {
-
     }
 
     private fun loadMapTapListeners() {
