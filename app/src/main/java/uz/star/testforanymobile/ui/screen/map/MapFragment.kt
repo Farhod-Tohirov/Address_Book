@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.yandex.mapkit.Animation
@@ -24,7 +25,6 @@ import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.GeoObjectTapListener
 import com.yandex.mapkit.layers.ObjectEvent
-import com.yandex.mapkit.map.CameraListener
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.GeoObjectSelectionMetadata
 import com.yandex.mapkit.map.VisibleRegionUtils
@@ -50,6 +50,7 @@ class MapFragment : Fragment() {
     private val searchResultAdapter = SearchResultAdapter()
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private val viewModel: MapViewModel by viewModels()
+    private val args: MapFragmentArgs by navArgs()
 
     @Inject
     lateinit var localStorage: LocalStorage
@@ -66,20 +67,36 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) {
             checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION) {
-                loadViews()
+                /**
+                 * Below checks from where this fragment is called
+                 * If It is called from Bookmark fragment args.placeModel can not be null
+                 * If it is loading first time args.placeModel will be null
+                 */
+                if (args.placeModel != null) {
+                    navigateToPoint(Point(args.placeModel!!.latitude, args.placeModel!!.longitude))
+                    binding.searchSection.gone()
+                    setPlaceData(args.placeModel!!, true)
+                    loadViews(true)
+                } else {
+                    loadViews(false)
+                }
             }
         }
     }
 
-    private fun loadViews() {
-        loadObservers()
-        loadUserLocation()
-        loadBottomSheetBehavior()
-        loadSuggestListener()
-        loadButtons()
-        loadMapTapListeners()
-        loadCameraChangeListener()
-
+    private fun loadViews(isItFromSaved: Boolean = false) {
+        /**
+         * If this fragment called from bookmarkFragment it is not needable to loadBelow
+         * So, below used if statement.
+         */
+        if (!isItFromSaved) {
+            loadObservers()
+            loadUserLocation()
+            loadBottomSheetBehavior()
+            loadSuggestListener()
+            loadButtons()
+            loadMapTapListeners()
+        }
     }
 
     @SuppressLint("FragmentLiveDataObserve")
@@ -120,10 +137,18 @@ class MapFragment : Fragment() {
 
     }
 
-    private fun setPlaceData(placeModel: PlaceModel) {
+    private fun setPlaceData(placeModel: PlaceModel, isItFromSaved: Boolean = false) {
         binding.placeItem.root.visible()
 
         (activity as MainActivity).hideBottomMenu()
+
+        if (isItFromSaved) {
+            binding.placeItem.closeButton.gone()
+            binding.placeItem.saveButton.gone()
+        } else {
+            binding.placeItem.closeButton.visible()
+            binding.placeItem.saveButton.visible()
+        }
 
         binding.placeItem.closeButton.setOnClickListener {
             showBottomMenu()
@@ -207,19 +232,6 @@ class MapFragment : Fragment() {
     private fun drawToPoint(point: Point) {
 
     }
-
-    private fun loadCameraChangeListener() {
-        binding.map.map.addCameraListener(cameraChangeListener)
-    }
-
-    private val cameraChangeListener =
-        CameraListener { map, cameraPosition, cameraUpdateReason, isStopped ->
-            if (cameraPosition.target.latitude != 0.0) {
-                if (isStopped) {
-                    binding.map.map.deselectGeoObject()
-                }
-            }
-        }
 
     private fun loadMapTapListeners() {
         binding.map.map.addTapListener(geoObjectTapListener)

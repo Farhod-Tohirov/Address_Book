@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import uz.star.testforanymobile.data.room.entity.PlaceModel
@@ -46,6 +47,12 @@ class BookmarkFragment : Fragment() {
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Удалить") { d, v ->
                 viewModel.deletePlaceMark(placeModel)
             }
+
+            dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "На карте") { d, v ->
+                val action = BookmarkFragmentDirections.actionBookmarkFragmentToMapFragment(placeModel)
+                findNavController().navigate(action)
+            }
+
             dialog.setTitle("Вы хотите удалить?")
             dialog.show()
         }

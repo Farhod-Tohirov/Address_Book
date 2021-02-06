@@ -3,6 +3,7 @@ package uz.star.testforanymobile.data.room.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.yandex.mapkit.geometry.Point
+import java.io.Serializable
 
 /**
  * Created by Farhod Tohirov on 04-Feb-21
@@ -19,4 +20,4 @@ data class PlaceModel(
     var score: Float?,
     var longitude: Double,
     var latitude: Double
-)
+): Serializable
